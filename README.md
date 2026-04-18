@@ -12,8 +12,8 @@ This project to control deezer on chrome tab in newer Chrome versions. Instead o
 ┌─────────────────┐        WebSocket        ┌──────────────────┐       chrome.scripting      ┌─────────────┐
 │  Python Client  │ ──────────────────────► │  Relay Server    │ ◄─────────────────────────  │  Chrome Ext │ ──► Deezer Tab
 │  (deezer.py /   │ ◄────────────────────── │  (server.py)     │ ─────────────────────────►  │             │
-│   client.py)    │        responses         │  port 8765       │       responses              └─────────────┘
-└─────────────────┘                          └──────────────────┘
+│   client.py)    │        responses        │  port 8765       │       responses             └─────────────┘
+└─────────────────┘                         └──────────────────┘
 ```
 
 **Why this works:** Chrome extensions can initiate *outbound* WebSocket connections. Your relay server sits in the middle, routing commands from Python to the extension and responses back.
