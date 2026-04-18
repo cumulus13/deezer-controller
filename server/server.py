@@ -289,9 +289,9 @@ async def run_server(config: ServerConfig):
     log.info(f'╔══════════════════════════════════════════╗')
     log.info(f'║     Deezer Controller Bridge v2.0.0      ║')
     log.info(f'╠══════════════════════════════════════════╣')
-    log.info(f'║  Relay server: ws://{config.host}:{config.port}{"":>15}║')
-    log.info(f'║  Auth token:   {"enabled" if config.token else "disabled":>10}{"":>14}║')
-    log.info(f'║  Max clients:  {config.max_clients:>10}{"":>14}║')
+    log.info(f'║  Relay server: ws://{config.host}:{config.port}{"":>7}║')
+    log.info(f'║  Auth token:   {"enabled" if config.token else "disabled":>10}{"":>16}║')
+    log.info(f'║  Max clients:  {config.max_clients:>10}{"":>16}║')
     log.info(f'╚══════════════════════════════════════════╝')
     log.info('Waiting for Chrome extension connection...')
 
