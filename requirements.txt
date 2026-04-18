@@ -1,0 +1,8 @@
+# Deezer Controller Bridge - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# WebSocket server & client (required)
+websockets>=12.0
+
+# Optional: colored terminal output (used by deezer.py CLI)
+# make_colors>=1.0

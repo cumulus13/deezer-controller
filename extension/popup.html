@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deezer Controller Bridge</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap');
+
+    :root {
+      --bg:        #0a0a0f;
+      --surface:   #13131a;
+      --border:    #1e1e2e;
+      --accent:    #a259ff;
+      --deezer:    #a259ff;
+      --green:     #23d05e;
+      --amber:     #f5a623;
+      --red:       #ff4757;
+      --text:      #e8e8f0;
+      --muted:     #6b6b85;
+      --radius:    8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 320px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+    }
+
+    /* Header */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 28px; height: 28px;
+      background: var(--accent);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+    }
+
+    .header-sub {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .status-dot {
+      margin-left: auto;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      flex-shrink: 0;
+      transition: background 0.3s;
+      box-shadow: 0 0 6px currentColor;
+    }
+    .status-dot.connected { background: var(--green); color: var(--green); }
+    .status-dot.connecting { background: var(--amber); color: var(--amber); }
+
+    /* Status bar */
+    .status-bar {
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .status-label {
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .status-label.connected { color: var(--green); }
+    .status-label.connecting { color: var(--amber); }
+    .status-label.disconnected { color: var(--red); }
+
+    /* Config */
+    .section {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .field-label {
+      color: var(--muted);
+      font-size: 10px;
+      min-width: 36px;
+    }
+
+    input[type="text"], input[type="number"] {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      padding: 5px 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { border-color: var(--accent); }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      padding: 6px 12px;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Quick controls */
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+
+    .ctrl-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 4px;
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+    }
+    .ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .ctrl-btn .icon { font-size: 16px; }
+
+    /* Log */
+    .log-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      height: 80px;
+      overflow-y: auto;
+      padding: 6px 8px;
+      font-size: 10px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .log-entry { margin-bottom: 2px; }
+    .log-entry.ok  { color: var(--green); }
+    .log-entry.err { color: var(--red); }
+    .log-entry.info{ color: var(--accent); }
+
+    /* Footer */
+    .footer {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar { width: 3px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">🎵</div>
+    <div>
+      <div class="header-title">Deezer Bridge</div>
+      <div class="header-sub">WebSocket Controller v2.0</div>
+    </div>
+    <div class="status-dot" id="statusDot"></div>
+  </div>
+
+  <div class="status-bar">
+    <span class="status-label disconnected" id="statusLabel">DISCONNECTED</span>
+    <span id="statusDetail">Server not found</span>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Server Config</div>
+    <div class="field-row">
+      <span class="field-label">Host</span>
+      <input type="text" id="wsHost" value="localhost" placeholder="localhost">
+    </div>
+    <div class="field-row">
+      <span class="field-label">Port</span>
+      <input type="number" id="wsPort" value="8765" min="1024" max="65535">
+      <button class="btn-primary" id="saveBtn">Save</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Quick Controls</div>
+    <div class="controls">
+      <button class="ctrl-btn" id="btnPrev"><span class="icon">⏮</span>Prev</button>
+      <button class="ctrl-btn" id="btnPlay"><span class="icon">▶</span>Play</button>
+      <button class="ctrl-btn" id="btnNext"><span class="icon">⏭</span>Next</button>
+      <button class="ctrl-btn" id="btnPause"><span class="icon">⏸</span>Pause</button>
+      <button class="ctrl-btn" id="btnShuffle"><span class="icon">🔀</span>Shuffle</button>
+      <button class="ctrl-btn" id="btnLike"><span class="icon">♥</span>Like</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Activity Log</div>
+    <div class="log-box scrollbar-thin" id="logBox"></div>
+  </div>
+
+  <div class="footer">
+    <span>ws://<span id="footerHost">localhost</span>:<span id="footerPort">8765</span></span>
+    <button class="btn-ghost" id="reconnectBtn">Reconnect</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
